@@ -1,8 +1,8 @@
 # Explicitly have 1 worker process -- any more and nginx-rtmp-module will probably fail to stream:
 # https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/issues/142
 # based on: https://github.com/arut/nginx-rtmp-module/issues/781
-#worker_processes 1;
-#events {}
+worker_processes 1;
+events {}
 rtmp {
     server {
         listen 1935;
