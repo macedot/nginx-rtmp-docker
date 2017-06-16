@@ -1,7 +1,7 @@
 # Dockerfile for a simple Nginx stream replicator
 
 # Software versions
-FROM alpine:3.4
+FROM aarch64/alpine:edge
 ENV NGINX_VERSION nginx-1.11.4
 ENV NGINX_RTMP_MODULE_VERSION 1.1.7.10
 
