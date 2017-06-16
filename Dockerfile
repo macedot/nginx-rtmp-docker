@@ -1,7 +1,7 @@
 # Dockerfile for a simple Nginx stream replicator
 
 # Software versions
-FROM aarch64/alpine:edge
+FROM arm64v8/alpine:latest
 ENV NGINX_VERSION nginx-1.11.4
 ENV NGINX_RTMP_MODULE_VERSION 1.1.7.10
 
@@ -10,7 +10,7 @@ ENV USER nginx
 RUN adduser -s /sbin/nologin -D -H ${USER}
 
 # Install prerequisites and update certificates
-RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev && \
+RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev ffmpeg && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
