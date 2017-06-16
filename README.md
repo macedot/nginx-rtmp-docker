@@ -1,5 +1,6 @@
 # nginx-rtmp-docker
-**Dockerfile for building lightweight nginx + rtmp module for replicating streams**
+**Dockerfile for building lightweight nginx + rtmp module for replicating streams - ARM version**
+(base image: aarch64/alpine:edge)
 
 ## Usage
 `docker run -dp 1935:1935 dvdgiessen/nginx-rtmp-docker`
