@@ -17,8 +17,9 @@ rtmp {
 			push rtmp://127.0.0.1:1935/youtube;
 
 			# We change the stream resolution for Twitch
-			exec_push ffmpeg -i rtmp://127.0.0.1/live 
-				-threads 4 -b:v 2000k -g 30 -r 30 -s 1280x720 -preset superfast -ac 1 -f flv
+			exec_push nice -n 10 /usr/bin/ffmpeg -i rtmp://127.0.0.1/live -threads 4 
+				-ac 2 -framerate 30 -video_size 1920x1080 -c:v libx264 -preset veryfast -maxrate 3000k -bufsize 3000k 
+				-vf "scale=1280:-1,format=yuv420p" -g 60 -c:a aac -b:a 128k -ar 44100 -f flv 
 				rtmp://127.0.0.1/twitch;
 		}
 
