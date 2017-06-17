@@ -1,35 +1,37 @@
 # Explicitly have 1 worker process -- any more and nginx-rtmp-module will probably fail to stream:
 # https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/issues/142
-# based on: https://github.com/arut/nginx-rtmp-module/issues/781
 worker_processes 1;
 events {}
+rtmp_auto_push on;
 rtmp {
-    server {
-        listen 1935;
-        listen [::]:1935 ipv6only=on;
-	chunk_size 8192;
+	server {
+		listen 1935;
+		listen [::]:1935 ipv6only=on;
+		chunk_size 8192;
 
-        application live {
-            live on;
-            record off;
+		application live {
+			live on;
+			record off;
 
-            # We keep the original stream for Youtube
-            push rtmp://127.0.0.1:1935/youtube;
-         
-            # We change the stream resolution for Twitch
-            exec ffmpeg -i rtmp://127.0.0.1:1935/live/$name -threads 4 -vcodec flv -acodec copy -s 1280x720 -f flv rtmp://127.0.0.1:1935/twitch;
-         }
+			# We keep the original stream for Youtube
+			push rtmp://127.0.0.1:1935/youtube;
 
-        application twitch {
-            live on;
-            record off;
-            push rtmp://live-sao.twitch.tv/app/xxx;
-        }
+			# We change the stream resolution for Twitch
+			exec_push ffmpeg -i rtmp://127.0.0.1/live 
+				-threads 4 -b:v 2000k -g 30 -r 30 -s 1280x720 -preset superfast -ac 1 -f flv
+				rtmp://127.0.0.1/twitch;
+		}
 
-        application youtube {
-            live on;
-            record off;
-            push rtmp://a.rtmp.youtube.com/live2/xxx;
-        }
-    }
+		application twitch {
+			live on;
+			record off;
+			push rtmp://live-sao.twitch.tv/app/xxx;
+		}
+
+		application youtube {
+			live on;
+			record off;
+			push rtmp://a.rtmp.youtube.com/live2/xxx;
+		}
+	}
 }
