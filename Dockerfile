@@ -1,8 +1,9 @@
 # Dockerfile for a simple Nginx stream replicator
 
 # Software versions
-FROM arm64v8/alpine:latest
-ENV NGINX_VERSION nginx-1.11.4
+#FROM arm64v8/alpine:latest
+FROM alpine:latest
+ENV NGINX_VERSION nginx-1.13.1
 ENV NGINX_RTMP_MODULE_VERSION 1.1.7.10
 
 # Set up user
@@ -10,7 +11,7 @@ ENV USER nginx
 RUN adduser -s /sbin/nologin -D -H ${USER}
 
 # Install prerequisites and update certificates
-RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev ffmpeg && \
+RUN apk --update --no-cache add ca-certificates build-base openssl openssl-dev ffmpeg git && \
     update-ca-certificates && \
     rm -rf /var/cache/apk/*
 
@@ -21,12 +22,9 @@ RUN mkdir -p /tmp/build/nginx && \
     tar -zxf ${NGINX_VERSION}.tar.gz
 
 # Download the RTMP module
-RUN mkdir -p /tmp/build/nginx-rtmp-module && \
-    cd /tmp/build/nginx-rtmp-module && \
-    wget -O nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz https://github.com/sergey-dryabzhinsky/nginx-rtmp-module/archive/v${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    tar -zxf nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION}.tar.gz && \
-    cd nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} && \
-    wget -O - https://raw.githubusercontent.com/gentoo/gentoo/6241ba18ca4a5e043a97ad11cf450c8d27b3079f/www-servers/nginx/files/rtmp-nginx-1.11.0.patch | patch
+RUN mkdir -p /tmp/build/ && \
+    cd /tmp/build/ && \
+    git clone git://github.com/arut/nginx-rtmp-module.git 
 
 # Build and install nginx
 RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
@@ -77,7 +75,7 @@ RUN cd /tmp/build/nginx/${NGINX_VERSION} && \
         --without-pcre \
         --with-threads \
         --with-ipv6 \
-        --add-module=/tmp/build/nginx-rtmp-module/nginx-rtmp-module-${NGINX_RTMP_MODULE_VERSION} && \
+        --add-module=/tmp/build/nginx-rtmp-module && \
     make -j $(getconf _NPROCESSORS_ONLN) && \
     make install && \
     mkdir /var/lock/nginx && \
