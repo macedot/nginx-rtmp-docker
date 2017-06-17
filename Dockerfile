@@ -1,8 +1,8 @@
 # Dockerfile for a simple Nginx stream replicator
 
 # Software versions
-#FROM arm64v8/alpine:latest
-FROM alpine:latest
+FROM arm64v8/alpine:latest
+#FROM alpine:latest
 ENV NGINX_VERSION nginx-1.13.1
 ENV NGINX_RTMP_MODULE_VERSION 1.1.7.10
 
